@@ -1,5 +1,4 @@
-data/
-__pycache__/
-*.pyc
-.env
-.ipynb_checkpoints/
+# Ignore large data files
+data/*.csv
+data/*.xlsx
+data/cleaned_data.csv
