@@ -6,9 +6,7 @@ tqdm.pandas()
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
-# Download necessary NLTK data files (only required once)
-nltk.download('stopwords')
-nltk.download('wordnet')
+
 
 def clean_text(text):
     """
