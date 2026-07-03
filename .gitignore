@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -216,3 +217,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+=======
+# Ignore large data files
+data/*.csv
+data/*.xlsx
+data/cleaned_data.csv
+frontend/node_modules/
+>>>>>>> 64276edad2eade1d4dc075793ebce9f5c715a78b
+
+__pycache__
+.ipynb_checkpoints
+.env
