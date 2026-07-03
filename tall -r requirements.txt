@@ -1,0 +1,22 @@
+* [33m8611b08[m[33m ([m[1;32mfeature/CIT-24-01-0426-LogReg-CNN[m[33m)[m Save current model training progress
+* [33m13a9396[m[33m ([m[1;31morigin/feature/CIT-24-01-0426-LogReg-CNN[m[33m)[m Add CNN model training script and update training files
+[31m|[m * [33mc54881a[m[33m ([m[1;31morigin/feature/Member3CIT-24-01-0060-SVM-BERT[m[33m)[m feat: optimize model formats to .keras and update notebook
+[31m|[m * [33m00bda2e[m feat: complete member 3 text preprocessing, SVM training, and evaluation
+[31m|[m * [33m79aad1d[m Create .gitkeep
+[31m|[m * [33m66adb87[m Create .gitkeep
+[31m|[m * [33m2782c34[m Create .gitkeep
+[31m|[m * [33ma5300df[m Create .gitkeep
+[31m|[m * [33mb7029f0[m Create .gitkeep
+[31m|[m * [33m252180f[m Create .gitkeep
+[31m|[m * [33m153ad03[m Create .gitkeep
+[31m|[m * [33m305832b[m Initial commit
+[31m|[m *   [33mb666919[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #1 from Himasha1234/feature/CIT-24-01-0426-LogReg-CNN
+[31m|[m [33m|[m[31m\[m  
+[31m|[m [33m|[m[31m/[m  
+[31m|[m[31m/[m[33m|[m   
+* [33m|[m [33m30b97ce[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Preprocessing script finalized and data cleaning completed
+[33m|[m[33m/[m  
+*   [33ma55da0d[m[33m ([m[1;31morigin/Feature-Member3CIT-24-01-0060-SVM-BERT[m[33m, [m[1;31morigin/Feature-Member2CIT-24-01-0345-NB-LSTM[m[33m, [m[1;31morigin/Feature-Member1CIT-24-01-0426-LogReg-CNN[m[33m, [m[1;32mFeature-Member3CIT-24-01-0060-SVM-BERT[m[33m, [m[1;32mFeature-Member2CIT-24-01-0345-NB-LSTM[m[33m)[m Add project structure, requirements, and gitignore to prevent large file uploads
+[35m|[m[36m\[m  
+[35m|[m * [33me4a2e1e[m Initial commit
+* [33mcac6604[m feat: clean project structure and config files moved
