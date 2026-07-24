@@ -1,0 +1,4 @@
+=== Model Training Results ===
+Logistic Regression Accuracy: 0.9453
+CNN Model Final Accuracy: 0.9959
+CNN Model Final Loss: 0.0143
