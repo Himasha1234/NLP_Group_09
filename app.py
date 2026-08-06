@@ -1,8 +1,9 @@
 import streamlit as st
-import pickle
+import joblib
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 # Page Configuration
 st.set_page_config(
@@ -59,17 +60,15 @@ if st.button("🔍 Check Authenticity", use_container_width=True):
             # --- 1. Logistic Regression Prediction ---
             if selected_model_name == "Logistic Regression":
                 try:
-                    model = pickle.load(open("models/logistic_regression_model.pkl", "rb"))
-                    vectorizer = pickle.load(open("models/vectorizer.pkl", "rb"))
+                    model = joblib.load("models/logistic_regression_model.pkl")
+                    vectorizer = joblib.load("models/vectorizer.pkl")
                     
-                    # Transform and Predict
                     transformed_text = vectorizer.transform([news_text])
                     prediction = model.predict(transformed_text)[0]
                     
                     st.markdown("---")
                     st.subheader("📊 Prediction Result")
                     
-                    # ඔබේ ඩේටාසෙට් එකේ ලේබල් වලට අනුව (0/1 හෝ Fake/Real) මෙහි ප්‍රතිඵලය පෙන්වනු ඇත
                     if prediction == 0 or str(prediction).lower() in ['fake', '0']:
                         st.markdown('<div class="result-fake">🚨 Prediction: FAKE NEWS</div>', unsafe_allow_html=True)
                         st.error("The trained Logistic Regression model classifies this article as **Fake/Misleading**.")
@@ -79,23 +78,33 @@ if st.button("🔍 Check Authenticity", use_container_width=True):
                         
                 except Exception as e:
                     st.error(f"⚠️ Error loading Logistic Regression model: {e}")
-                    st.info("💡 Please ensure `vectorizer.pkl` and `logistic_regression_model.pkl` are inside the 'models/' folder.")
             
             # --- 2. CNN Model Prediction ---
             elif selected_model_name == "CNN Model":
                 try:
                     cnn_model = load_model("models/cnn_model.keras")
+                    tokenizer = joblib.load("models/tokenizer.pkl")
                     
-                    # මෙතැනට CNN මෝඩලයට අදාළ preprocessing / tokenization කෝඩ් එක එකතු කළ යුතුය
-                    # උදාහරණයක් ලෙස: padded_sequence = tokenizer.texts_to_sequences([news_text]) ...
+                    sequences = tokenizer.texts_to_sequences([news_text])
+                    max_length = 200  
+                    padded_text = pad_sequences(sequences, maxlen=max_length, padding='post', truncating='post')
+                    
+                    cnn_prediction = cnn_model.predict(padded_text)
+                    score = float(cnn_prediction[0][0])
                     
                     st.markdown("---")
                     st.subheader("📊 Prediction Result")
-                    st.success("CNN model loaded successfully from `models/cnn_model.keras`!")
-                    st.info("ℹ️ Connect your CNN text tokenization pipeline here to get the final Real/Fake output.")
                     
+                    if score < 0.5:
+                        st.markdown('<div class="result-fake">🚨 Prediction: FAKE NEWS</div>', unsafe_allow_html=True)
+                        st.error(f"The CNN model classifies this article as **Fake/Misleading** (Confidence: {(1-score)*100:.2f}%).")
+                    else:
+                        st.markdown('<div class="result-real">✅ Prediction: REAL NEWS</div>', unsafe_allow_html=True)
+                        st.success(f"The CNN model classifies this article as **Real/Reliable** (Confidence: {score*100:.2f}%).")
+                            
                 except Exception as e:
-                    st.error(f"⚠️ Error loading CNN model: {e}")
+                    st.error(f"⚠️ Error loading CNN model or tokenizer: {e}")
+                    st.info("💡 Please ensure `tokenizer.pkl` and `cnn_model.keras` exist inside the 'models/' folder by running `train_models.py`.")
 
 # Footer
 st.markdown("---")
