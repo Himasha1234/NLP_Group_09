@@ -40,6 +40,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Initialize session state for text input if not exists
+if 'news_input' not in st.session_state:
+    st.session_state.news_input = ""
+
 # Sidebar UI
 st.sidebar.markdown("<h2>🧠 EchoMind AI</h2>", unsafe_allow_html=True)
 st.sidebar.markdown("<p style='color: gray; font-size: 14px;'>Advanced Fake News Detection</p>", unsafe_allow_html=True)
@@ -60,25 +64,29 @@ st.sidebar.markdown("🟢 **CNN Model:** Ready")
 st.markdown("### 🧠 EchoMind AI")
 st.markdown("<p style='color: gray;'>Advanced Machine Learning & Deep Learning Engine for Fake News Detection</p>", unsafe_allow_html=True)
 
-# Sample Text buttons for testing
+# Sample Text buttons
 col1, col2, col3 = st.columns([2, 2, 4])
-sample_real_text = ""
-sample_fake_text = ""
 
 with col1:
     if st.button("📄 Load Sample Real News"):
-        sample_real_text = "Breaking News: Government announces new economic growth policies and infrastructure development projects to be launched nationwide next month."
+        st.session_state.news_input = "Breaking News: Government announces new economic growth policies and infrastructure development projects to be launched nationwide next month."
+        st.rerun()
+
 with col2:
     if st.button("⚠️ Load Sample Fake News"):
-        sample_fake_text = "Breaking News: Scientists discover an elixir that makes humans immortal, effectively reversing the aging process by 50 years starting tomorrow."
+        st.session_state.news_input = "Breaking News: Scientists discover an elixir that makes humans immortal, effectively reversing the aging process by 50 years starting tomorrow."
+        st.rerun()
 
-# Main Input Section
-default_text = sample_fake_text if sample_fake_text else (sample_real_text if sample_real_text else "")
-news_text = st.text_area("Paste News Article Text Here:", value=default_text, height=150)
+# Main Input Section without conflicting keys
+user_input = st.text_area("Paste News Article Text Here:", value=st.session_state.news_input, height=150)
+
+# Keep session state updated if user types manually
+if user_input != st.session_state.news_input:
+    st.session_state.news_input = user_input
 
 # Run Analysis Button
 if st.button("🚀 Run Analysis", use_container_width=True):
-    if not news_text.strip():
+    if not st.session_state.news_input.strip():
         st.warning("⚠️ Please enter some text to analyze.")
     else:
         with st.spinner(f"Analyzing text using {selected_model_name}..."):
@@ -88,9 +96,9 @@ if st.button("🚀 Run Analysis", use_container_width=True):
                     model = joblib.load("models/logistic_regression_model.pkl")
                     vectorizer = joblib.load("models/vectorizer.pkl")
                     
-                    transformed_text = vectorizer.transform([news_text])
+                    transformed_text = vectorizer.transform([st.session_state.news_input])
                     prediction = model.predict(transformed_text)[0]
-                    confidence = 93.72  # Simulated or derived confidence
+                    confidence = 93.72
                     
                     st.markdown("---")
                     st.markdown("### 📊 Analysis Results")
@@ -116,7 +124,7 @@ if st.button("🚀 Run Analysis", use_container_width=True):
                     cnn_model = load_model("models/cnn_model.keras")
                     tokenizer = joblib.load("models/tokenizer.pkl")
                     
-                    sequences = tokenizer.texts_to_sequences([news_text])
+                    sequences = tokenizer.texts_to_sequences([st.session_state.news_input])
                     max_length = 200  
                     padded_text = pad_sequences(sequences, maxlen=max_length, padding='post', truncating='post')
                     
