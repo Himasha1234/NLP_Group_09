@@ -10,7 +10,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Embedding, LSTM, Dense, Dropout, SpatialDropout1D
 
-os.makedirs('models', exist_ok=True)
+os.makedirs('notebooks/models', exist_ok=True)
 
 # -----------------------------------------------------------------------------
 # 1. TRAIN & SAVE NAIVE BAYES
@@ -29,9 +29,9 @@ X_train_tfidf = tfidf.fit_transform(X_train_ml)
 nb_model = MultinomialNB()
 nb_model.fit(X_train_tfidf, y_train_ml)
 
-joblib.dump(nb_model, 'models/naive_bayes_model.pkl')
-joblib.dump(tfidf, 'models/tfidf_vectorizer.pkl')
-print("✅ Naive Bayes artifacts saved!")
+joblib.dump(nb_model, 'notebooks/models/naive_bayes_model.pkl')
+joblib.dump(tfidf, 'notebooks/models/tfidf_vectorizer.pkl')
+print("[SUCCESS] Naive Bayes artifacts saved!")
 
 # -----------------------------------------------------------------------------
 # 2. TRAIN & SAVE LSTM
@@ -66,8 +66,8 @@ model = Sequential([
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 model.fit(X_train_dl, y_train_dl, epochs=3, batch_size=64, validation_split=0.1, verbose=1)
 
-model.save('models/lstm_model.keras')
-joblib.dump(tokenizer, 'models/lstm_tokenizer.pkl')
-print("✅ LSTM artifacts saved!")
+model.save('notebooks/models/lstm_model.keras')
+joblib.dump(tokenizer, 'notebooks/models/lstm_tokenizer.pkl')
+print("[SUCCESS] LSTM artifacts saved!")
 
-print("\n🎉 All models and tokenizers exported successfully to 'models/' folder!")
+print("\n[SUCCESS] All models and tokenizers exported successfully to 'notebooks/models/' folder!")
