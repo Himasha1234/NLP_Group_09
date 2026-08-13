@@ -71,11 +71,17 @@ selected_model = st.sidebar.selectbox(
 )
 
 st.sidebar.markdown("---")
+<<<<<<< HEAD
 st.sidebar.subheader("📌 Auto Sample News")
 sample_choice = st.sidebar.selectbox(
     "Load Sample News:",
     ["-- Select Sample --", "Sample Real News (NASA)", "Sample Fake News (Immortal Elixir)"]
 )
+=======
+st.sidebar.markdown("### 📊 System Status")
+st.sidebar.markdown("🟢 **Vectorizer & Tokenizer:** Loaded")
+st.sidebar.markdown("🟢 **Models:** Ready")
+>>>>>>> b645348 (Trained models successfully and updated app.py for Member 1)
 
 # Pre-defined Sample Texts
 sample_real = "NASA's Perseverance rover successfully collected its first rock sample from the Martian surface, marking a significant milestone in the search for ancient life on the Red Planet. Scientists confirm the sample is well-preserved and ready for future analysis."
@@ -90,12 +96,31 @@ elif sample_choice == "Sample Fake News (Immortal Elixir)":
 # Main Input Section
 news_text = st.text_area("News Content / Headline:", value=default_text, placeholder="Paste your news text here...", height=150)
 
+<<<<<<< HEAD
 if st.button("Analyze News", type="primary"):
     if not news_text.strip():
         st.warning("Please enter some text to analyze.")
+=======
+with col2:
+    if st.button("⚠️ Load Sample Fake News"):
+        st.session_state.news_input = "Breaking News: Scientists discover an elixir that makes humans immortal, effectively reversing the aging process by 50 years starting tomorrow."
+        st.rerun()
+
+# Main Input Section
+user_input = st.text_area("Paste News Article Text Here:", value=st.session_state.news_input, height=150)
+
+if user_input != st.session_state.news_input:
+    st.session_state.news_input = user_input
+
+# Run Analysis Button
+if st.button("🚀 Run Analysis", use_container_width=True):
+    if not st.session_state.news_input.strip():
+        st.warning("⚠️ Please enter some text to analyze.")
+>>>>>>> b645348 (Trained models successfully and updated app.py for Member 1)
     else:
         with st.spinner("Analyzing text authenticity..."):
             
+<<<<<<< HEAD
             prediction_score = 0.5 
             is_fake = False
             
@@ -104,13 +129,85 @@ if st.button("Analyze News", type="primary"):
                 if 'naive_bayes' in models_dict and 'tfidf' in models_dict:
                     vec_text = models_dict['tfidf'].transform([news_text])
                     nb_pred_prob = models_dict['naive_bayes'].predict_proba(vec_text)[0][1]
+=======
+            # --- 1. LOGISTIC REGRESSION PREDICTION ---
+            if selected_model_name == "Logistic Regression":
+                try:
+                    model = joblib.load("models/logistic_regression_model.pkl")
+                    vectorizer = joblib.load("models/vectorizer.pkl")
+                    
+                    transformed_text = vectorizer.transform([st.session_state.news_input])
+                    prediction = model.predict(transformed_text)[0]
+                    
+                    # Get probability confidence if available
+                    if hasattr(model, "predict_proba"):
+                        proba = model.predict_proba(transformed_text)[0]
+                        confidence = float(np.max(proba)) * 100
+                    else:
+                        confidence = 95.00
+                    
+                    st.markdown("---")
+                    st.markdown("### 📊 Analysis Results")
+                    
+                    res_col1, res_col2 = st.columns([3, 2])
+                    with res_col1:
+                        # WELFake Standard: 1 = Fake, 0 = Real
+                        if prediction == 1 or str(prediction).lower() in ['1', 'fake']:
+                            st.markdown('<div class="result-fake">⚠️ Verdict: FAKE NEWS DETECTED</div>', unsafe_allow_html=True)
+                            st.write("The selected **Logistic Regression** flags high markers of sensationalism or misinformation patterns.")
+                        else:
+                            st.markdown('<div class="result-real">✅ Verdict: REAL NEWS</div>', unsafe_allow_html=True)
+                            st.write("The selected **Logistic Regression** classifies this article as reliable and authentic.")
+                    with res_col2:
+                        st.markdown("#### Model Confidence Score")
+                        st.markdown(f"### **{confidence:.2f}%**")
+                        st.progress(confidence / 100)
+                        
+                except Exception as e:
+                    st.error(f"⚠️ Error running Logistic Regression model: {e}")
+            
+            # --- 2. CNN MODEL PREDICTION ---
+            elif selected_model_name == "CNN Model":
+                try:
+                    cnn_model = load_model("models/cnn_model.keras")
+                    tokenizer = joblib.load("models/tokenizer.pkl")
+>>>>>>> b645348 (Trained models successfully and updated app.py for Member 1)
                     
                     # Naive Bayes සඳහා probability එක invert කරගැනීම (Real එකක් සඳහා score එක අඩු විය යුතු නම්)
                     corrected_nb_score = 1.0 - nb_pred_prob if selected_model == "Naive Bayes" else nb_pred_prob
                     
+<<<<<<< HEAD
                     if selected_model == "Naive Bayes":
                         prediction_score = corrected_nb_score
                         is_fake = (prediction_score > 0.5)
+=======
+                    cnn_prediction = cnn_model.predict(padded_text)
+                    score = float(cnn_prediction[0][0])
+                    
+                    # Assuming Sigmoid output: closer to 1 or 0 depending on training mapping
+                    # Here standard: score >= 0.5 as Fake (1) or Real (0). Let's use standard threshold.
+                    is_fake = score >= 0.5
+                    confidence = (score if is_fake else (1 - score)) * 100
+                    
+                    st.markdown("---")
+                    st.markdown("### 📊 Analysis Results")
+                    
+                    res_col1, res_col2 = st.columns([3, 2])
+                    with res_col1:
+                        if is_fake:
+                            st.markdown('<div class="result-fake">⚠️ Verdict: FAKE NEWS DETECTED</div>', unsafe_allow_html=True)
+                            st.write("The deep learning **CNN Model** detects deep stylistic patterns typical of misleading or fabricated news.")
+                        else:
+                            st.markdown('<div class="result-real">✅ Verdict: REAL NEWS</div>', unsafe_allow_html=True)
+                            st.write("The deep learning **CNN Model** classifies this article as reliable.")
+                    with res_col2:
+                        st.markdown("#### Model Confidence Score")
+                        st.markdown(f"### **{confidence:.2f}%**")
+                        st.progress(confidence / 100)
+                            
+                except Exception as e:
+                    st.error(f"⚠️ Error running CNN model: {e}")
+>>>>>>> b645348 (Trained models successfully and updated app.py for Member 1)
 
             # 2. LSTM Prediction Logic
             if selected_model == "LSTM Deep Learning" or selected_model == "Ensemble (All Models)":
