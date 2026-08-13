@@ -1,0 +1,22 @@
+=== Fake News Detection Model Training Results ===
+Dataset: cleaned_data.csv
+Test Size: 20%
+--------------------------------------------------
+1. Logistic Regression & TF-IDF:
+   - Accuracy: 94.08%
+
+   Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.94      0.95      0.94      7280
+           1       0.94      0.94      0.94      6963
+
+    accuracy                           0.94     14243
+   macro avg       0.94      0.94      0.94     14243
+weighted avg       0.94      0.94      0.94     14243
+
+
+--------------------------------------------------
+2. Convolutional Neural Network (CNN):
+   - Test Accuracy: 95.94%
+   - Test Loss: 0.1140
