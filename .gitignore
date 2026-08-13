@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 data/
 __pycache__/
 *.pyc
 .env
 .ipynb_checkpoints/
+=======
+*.csv
+*.zip
+>>>>>>> f4b63048fe5725401fc830ba6d82746536c624a6
