@@ -8,8 +8,13 @@ Test Size: 20%
    Classification Report:
               precision    recall  f1-score   support
 
+<<<<<<< HEAD
            0       0.94      0.94      0.94      6963
            1       0.94      0.95      0.94      7280
+=======
+           0       0.94      0.95      0.94      7280
+           1       0.94      0.94      0.94      6963
+>>>>>>> d15315b (Fixed NLTK path issue and updated data cleaning and training scripts)
 
     accuracy                           0.94     14243
    macro avg       0.94      0.94      0.94     14243
@@ -18,5 +23,10 @@ weighted avg       0.94      0.94      0.94     14243
 
 --------------------------------------------------
 2. Convolutional Neural Network (CNN):
+<<<<<<< HEAD
    - Test Accuracy: 95.76%
    - Test Loss: 0.1178
+=======
+   - Test Accuracy: 95.94%
+   - Test Loss: 0.1140
+>>>>>>> d15315b (Fixed NLTK path issue and updated data cleaning and training scripts)
