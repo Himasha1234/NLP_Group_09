@@ -1,25 +1,18 @@
 import pandas as pd
 import re
+import os
 
-# -----------------------------------------------------------------------------
-# 1. LOAD DATASET
-# -----------------------------------------------------------------------------
 print("Loading dataset...")
 df = pd.read_csv('data/WELFake_Dataset.csv')
-
 print(f"Initial shape: {df.shape}")
 
-# -----------------------------------------------------------------------------
-# 2. STRUCTURAL CLEANING (Missing Values & Duplicates)
-# -----------------------------------------------------------------------------
+# Structural Cleaning
 df = df.dropna(subset=['text', 'title']).copy()
 df = df.drop_duplicates(subset=['text']).reset_index(drop=True)
 
 print(f"Shape after removing nulls and duplicates: {df.shape}")
 
-# -----------------------------------------------------------------------------
-# 3. TEXT CLEANING FUNCTIONS (Built-in Stopwords to avoid path issues)
-# -----------------------------------------------------------------------------
+# Stopwords list
 stop_words = set([
     'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're",
     "you've", "you'll", "you'd", 'your', 'yours', 'yourself', 'yourselves', 'he',
@@ -45,7 +38,6 @@ stop_words = set([
 def clean_text_base(text):
     if not isinstance(text, str):
         return ""
-    
     text = text.lower()
     text = re.sub(r'https?://\S+|www\.\S+', '', text)
     text = re.sub(r'<.*?>', '', text)
@@ -53,7 +45,6 @@ def clean_text_base(text):
     text = re.sub(r'@\S+', '', text)
     text = re.sub(r'[^a-zA-Z\s]', '', text)
     text = re.sub(r'\s+', ' ', text).strip()
-    
     return text
 
 def remove_stopwords(text):
@@ -61,9 +52,6 @@ def remove_stopwords(text):
     filtered_words = [word for word in words if word not in stop_words]
     return ' '.join(filtered_words)
 
-# -----------------------------------------------------------------------------
-# 4. APPLY CLEANING PIPELINES
-# -----------------------------------------------------------------------------
 print("Cleaning text for Deep Learning (LSTM)...")
 df['text_clean_dl'] = df['text'].apply(clean_text_base)
 
@@ -72,9 +60,7 @@ df['text_clean_ml'] = df['text_clean_dl'].apply(remove_stopwords)
 
 df = df[df['text_clean_ml'].str.strip().astype(bool)].reset_index(drop=True)
 
-# -----------------------------------------------------------------------------
-# 5. INSPECT & SAVE CLEANED DATA
-# -----------------------------------------------------------------------------
+os.makedirs('data', exist_ok=True)
 output_path = 'data/WELFake_cleaned.csv'
 df.to_csv(output_path, index=False)
 print(f"\n[SUCCESS] Cleaned dataset saved successfully to '{output_path}'!")
