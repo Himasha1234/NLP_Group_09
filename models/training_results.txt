@@ -18,5 +18,5 @@ weighted avg       0.94      0.94      0.94     14243
 
 --------------------------------------------------
 2. Convolutional Neural Network (CNN):
-   - Test Accuracy: 95.91%
-   - Test Loss: 0.1124
+   - Test Accuracy: 95.76%
+   - Test Loss: 0.1178

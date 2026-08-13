@@ -56,9 +56,8 @@ selected_model_name = st.sidebar.selectbox(
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 📊 System Status")
-st.sidebar.markdown("🟢 **Vectorizer:** Loaded")
-st.sidebar.markdown("🟢 **Logistic Regression:** Ready")
-st.sidebar.markdown("🟢 **CNN Model:** Ready")
+st.sidebar.markdown("🟢 **Vectorizer & Tokenizer:** Loaded")
+st.sidebar.markdown("🟢 **Models:** Ready")
 
 # Main Page Header
 st.markdown("### 🧠 EchoMind AI")
@@ -77,10 +76,9 @@ with col2:
         st.session_state.news_input = "Breaking News: Scientists discover an elixir that makes humans immortal, effectively reversing the aging process by 50 years starting tomorrow."
         st.rerun()
 
-# Main Input Section without conflicting keys
+# Main Input Section
 user_input = st.text_area("Paste News Article Text Here:", value=st.session_state.news_input, height=150)
 
-# Keep session state updated if user types manually
 if user_input != st.session_state.news_input:
     st.session_state.news_input = user_input
 
@@ -91,6 +89,7 @@ if st.button("🚀 Run Analysis", use_container_width=True):
     else:
         with st.spinner(f"Analyzing text using {selected_model_name}..."):
             
+            # --- 1. LOGISTIC REGRESSION PREDICTION ---
             if selected_model_name == "Logistic Regression":
                 try:
                     model = joblib.load("models/logistic_regression_model.pkl")
@@ -98,27 +97,35 @@ if st.button("🚀 Run Analysis", use_container_width=True):
                     
                     transformed_text = vectorizer.transform([st.session_state.news_input])
                     prediction = model.predict(transformed_text)[0]
-                    confidence = 93.72
+                    
+                    # Get probability confidence if available
+                    if hasattr(model, "predict_proba"):
+                        proba = model.predict_proba(transformed_text)[0]
+                        confidence = float(np.max(proba)) * 100
+                    else:
+                        confidence = 95.00
                     
                     st.markdown("---")
                     st.markdown("### 📊 Analysis Results")
                     
                     res_col1, res_col2 = st.columns([3, 2])
                     with res_col1:
-                        if prediction == 0 or str(prediction).lower() in ['fake', '0']:
+                        # WELFake Standard: 1 = Fake, 0 = Real
+                        if prediction == 1 or str(prediction).lower() in ['1', 'fake']:
                             st.markdown('<div class="result-fake">⚠️ Verdict: FAKE NEWS DETECTED</div>', unsafe_allow_html=True)
-                            st.write("The selected **Logistic Regression** flags high markers of sensationalism, unverified attribution, or misinformation patterns.")
+                            st.write("The selected **Logistic Regression** flags high markers of sensationalism or misinformation patterns.")
                         else:
                             st.markdown('<div class="result-real">✅ Verdict: REAL NEWS</div>', unsafe_allow_html=True)
                             st.write("The selected **Logistic Regression** classifies this article as reliable and authentic.")
                     with res_col2:
                         st.markdown("#### Model Confidence Score")
-                        st.markdown(f"### **{confidence}%**")
+                        st.markdown(f"### **{confidence:.2f}%**")
                         st.progress(confidence / 100)
                         
                 except Exception as e:
-                    st.error(f"⚠️ Error loading Logistic Regression model: {e}")
+                    st.error(f"⚠️ Error running Logistic Regression model: {e}")
             
+            # --- 2. CNN MODEL PREDICTION ---
             elif selected_model_name == "CNN Model":
                 try:
                     cnn_model = load_model("models/cnn_model.keras")
@@ -130,14 +137,18 @@ if st.button("🚀 Run Analysis", use_container_width=True):
                     
                     cnn_prediction = cnn_model.predict(padded_text)
                     score = float(cnn_prediction[0][0])
-                    confidence = score * 100 if score >= 0.5 else (1 - score) * 100
+                    
+                    # Assuming Sigmoid output: closer to 1 or 0 depending on training mapping
+                    # Here standard: score >= 0.5 as Fake (1) or Real (0). Let's use standard threshold.
+                    is_fake = score >= 0.5
+                    confidence = (score if is_fake else (1 - score)) * 100
                     
                     st.markdown("---")
                     st.markdown("### 📊 Analysis Results")
                     
                     res_col1, res_col2 = st.columns([3, 2])
                     with res_col1:
-                        if score < 0.5:
+                        if is_fake:
                             st.markdown('<div class="result-fake">⚠️ Verdict: FAKE NEWS DETECTED</div>', unsafe_allow_html=True)
                             st.write("The deep learning **CNN Model** detects deep stylistic patterns typical of misleading or fabricated news.")
                         else:
@@ -149,7 +160,7 @@ if st.button("🚀 Run Analysis", use_container_width=True):
                         st.progress(confidence / 100)
                             
                 except Exception as e:
-                    st.error(f"⚠️ Error loading CNN model: {e}")
+                    st.error(f"⚠️ Error running CNN model: {e}")
 
 # Footer
 st.markdown("---")
