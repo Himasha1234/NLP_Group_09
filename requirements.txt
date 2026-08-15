@@ -1,9 +1,8 @@
+streamlit
 pandas
 numpy
 scikit-learn
-tensorflow
-streamlit
-beautifulsoup4
+joblib
 nltk
 matplotlib
 seaborn
