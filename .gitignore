@@ -1,10 +1,38 @@
-<<<<<<< HEAD
 data/
 __pycache__/
 *.pyc
 .env
 .ipynb_checkpoints/
-=======
 *.csv
 *.zip
->>>>>>> f4b63048fe5725401fc830ba6d82746536c624a6
+
+# --------------------------------------------------
+# Ignore Large Data Files (WELFake Datasets)
+# --------------------------------------------------
+
+*.csv
+
+
+# --------------------------------------------------
+# Python & Environment Cache
+# --------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# --------------------------------------------------
+# Jupyter Notebook & VS Code Settings
+# --------------------------------------------------
+.ipynb_checkpoints/
+.vscode/
+
+# --------------------------------------------------
+# Model Files (Optional: Ignore heavy weights if >100MB)
+# --------------------------------------------------
+# *.h5
+# *.keras
+ main

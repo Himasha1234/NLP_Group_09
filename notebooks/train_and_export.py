@@ -1,0 +1,73 @@
+import os
+import joblib
+import pandas as pd
+import tensorflow as tf
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Embedding, LSTM, Dense, Dropout, SpatialDropout1D
+
+os.makedirs('notebooks/models', exist_ok=True)
+
+# -----------------------------------------------------------------------------
+# 1. TRAIN & SAVE NAIVE BAYES
+# -----------------------------------------------------------------------------
+print("Loading data for Naive Bayes...")
+df_ml = pd.read_csv('data/WELFake_cleaned.csv').dropna(subset=['text_clean_ml'])
+
+X_train_ml, _, y_train_ml, _ = train_test_split(
+    df_ml['text_clean_ml'], df_ml['label'], test_size=0.2, random_state=42, stratify=df_ml['label']
+)
+
+print("Fitting TF-IDF and Naive Bayes...")
+tfidf = TfidfVectorizer(max_features=10000, ngram_range=(1, 2))
+X_train_tfidf = tfidf.fit_transform(X_train_ml)
+
+nb_model = MultinomialNB()
+nb_model.fit(X_train_tfidf, y_train_ml)
+
+joblib.dump(nb_model, 'notebooks/models/naive_bayes_model.pkl')
+joblib.dump(tfidf, 'notebooks/models/tfidf_vectorizer.pkl')
+print("[SUCCESS] Naive Bayes artifacts saved!")
+
+# -----------------------------------------------------------------------------
+# 2. TRAIN & SAVE LSTM
+# -----------------------------------------------------------------------------
+print("\nLoading data for LSTM...")
+df_dl = pd.read_csv('data/WELFake_cleaned.csv').dropna(subset=['text_clean_dl'])
+
+MAX_VOCAB = 20000
+MAX_LEN = 300
+
+tokenizer = Tokenizer(num_words=MAX_VOCAB, oov_token="<OOV>")
+tokenizer.fit_on_texts(df_dl['text_clean_dl'])
+
+sequences = tokenizer.texts_to_sequences(df_dl['text_clean_dl'])
+X_padded = pad_sequences(sequences, maxlen=MAX_LEN, padding='post', truncating='post')
+y_dl = df_dl['label'].values
+
+X_train_dl, _, y_train_dl, _ = train_test_split(
+    X_padded, y_dl, test_size=0.2, random_state=42, stratify=y_dl
+)
+
+print("Training LSTM network...")
+model = Sequential([
+    Embedding(input_dim=MAX_VOCAB, output_dim=128, input_length=MAX_LEN),
+    SpatialDropout1D(0.2),
+    LSTM(64, dropout=0.2, recurrent_dropout=0.2),
+    Dense(32, activation='relu'),
+    Dropout(0.3),
+    Dense(1, activation='sigmoid')
+])
+
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.fit(X_train_dl, y_train_dl, epochs=3, batch_size=64, validation_split=0.1, verbose=1)
+
+model.save('notebooks/models/lstm_model.keras')
+joblib.dump(tokenizer, 'notebooks/models/lstm_tokenizer.pkl')
+print("[SUCCESS] LSTM artifacts saved!")
+
+print("\n[SUCCESS] All models and tokenizers exported successfully to 'notebooks/models/' folder!")
