@@ -68,10 +68,15 @@ if st.button("Run Authentic Analysis", type="primary"):
         st.subheader("📊 Metadata & Complexity")
         m1, m2, m3, m4 = st.columns(4)
         m1.metric("Words", word_count); m2.metric("Chars", char_count); m3.metric("Read Time", f"{read_time} min"); m4.metric("Complexity", f"{complexity:.1f}%")
-        
+
+        # Prominent Result Banner
+        if result == "Fake News":
+            st.error("🚨 FAKE NEWS DETECTED!")
+        else:
+            st.success("✅ REAL NEWS DETECTED!")
+
         # XAI Highlighting
         if is_fake:
-            st.error("🚨 Fake News Detected!")
             highlighted = news_text
             for kw in found_keywords: highlighted = re.sub(f"({kw})", r"<mark style='background-color: #ff9999;'><b>\1</b></mark>", highlighted, flags=re.IGNORECASE)
             st.markdown(f"<div style='border: 1px solid #ff9999; padding: 15px; border-radius: 10px;'>{highlighted}</div>", unsafe_allow_html=True)
